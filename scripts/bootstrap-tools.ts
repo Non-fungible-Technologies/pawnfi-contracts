@@ -56,7 +56,28 @@ export async function mintNFTs(
         `https://s3.amazonaws.com/images.pawn.fi/test-nft-metadata/PawnBeats/nft-${j++}.json`,
     ];
 
-    await beats.mintBatch(target, [0, 1], [numBeats0, numBeats1], uris, "0x00");
+    for (let i = 0; i < numBeats0; i++) {
+      const mod = i % 2;
+      if (mod === 0) {
+        console.log(`Sending 2 tokens to ${target}`);
+        // Always send 2 at once.
+        await beats["mint(address,uint256,string)"](
+          target,
+          2,
+          `https://s3.amazonaws.com/images.pawn.fi/test-nft-metadata/PawnBeats/nft-${j++}.json`,
+        );
+      } else {
+        // Send only 1.
+        console.log(`Sending 1 token to ${target}`);
+        await beats["mint(address,uint256,string)"](
+          target,
+          1,
+          `https://s3.amazonaws.com/images.pawn.fi/test-nft-metadata/PawnBeats/nft-${j++}.json`,
+        );
+      }
+    }
+
+    await beats.mintBatch(target, [0, 1], [numBeats0, numBeats1], uris, "0x00")
 }
 
 export async function mintAndDistribute(
